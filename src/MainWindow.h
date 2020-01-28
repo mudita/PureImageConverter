@@ -18,6 +18,7 @@ class MainWindow : public Gtk::Window
 {
 	// Constructor and destructor
 public:
+        static const uint32_t COLOUR_FOR_TRANSPARENT = 16; // 17th colour, as 0-15 are regular ones
 	MainWindow( std::string filename, uint32_t alphaColor, bool blackWhite );
 	virtual ~MainWindow();
 

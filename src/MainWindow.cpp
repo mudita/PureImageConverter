@@ -19,6 +19,7 @@
 #include "MPIConverter.h"
 #include "MainWindow.h"
 
+extern const uint32_t COLOUR_FOR_TRANSPARENT;
 // Constructor of the main Window (build ui interface).
 MainWindow::MainWindow( std::string filename, uint32_t alphaColor, bool blackWhite ) : Window()
 {
@@ -32,13 +33,15 @@ MainWindow::MainWindow( std::string filename, uint32_t alphaColor, bool blackWhi
 	uint32_t pixRowstride = piximage.get()->get_rowstride();
 	uint32_t pixWidth = piximage.get()->get_width();
 	uint32_t pixHeight = piximage.get()->get_height();
-	uint32_t pixPixelSize = pixRowstride/pixWidth;
+	uint32_t pixPixelSize = pixRowstride/pixWidth; // == get_n_channels()
+        bool pixHasAlpha = piximage->get_has_alpha();
 
 	std::cout<<"rowstride: "<<pixRowstride<<std::endl;
 	std::cout<<"width: "<<pixWidth<<std::endl;
 	std::cout<<"height: "<<pixHeight<<std::endl;
 	std::cout<<"bytes per pixel: "<<pixPixelSize<<std::endl;
 	std::cout<<"black&white: "<<(blackWhite?"true":"false")<<std::endl;
+	std::cout<<"has alpha? : "<<(pixHasAlpha?"true":"false")<<std::endl;
 
 
 	//convert to byte per pixel representation
@@ -49,15 +52,27 @@ MainWindow::MainWindow( std::string filename, uint32_t alphaColor, bool blackWhi
 	uint8_t pixel8;
 	for( uint32_t y=0; y<pixHeight; ++y ) {
 		for( uint32_t x=0; x<pixWidth; ++x ) {
-			pixel8 = static_cast<uint8_t>((*(pixBuffer + pixOffset)) & 0x000000FF);
-			pixel8 >>= 4;
-			if( blackWhite ) {
-				if( pixel8 > 7 )
-					pixel8 = 15;
-				else
-					pixel8 = 0;
-			}
-			buffer[offset] = pixel8;
+			pixel8 = static_cast<uint8_t>((*(pixBuffer + pixOffset)) & 0x000000FF); // luminosity as a single byte. this whole cast is actually not needed, as pixBuffer is uint8_t. Here reading actually red channel
+                  bool transparent = false;
+                  if (pixHasAlpha) {
+                    // then the last channel is alpha
+                    uint8_t alpha_offset = pixPixelSize - 1;
+                    uint8_t alpha8 = *(pixBuffer + pixOffset + alpha_offset);
+                    transparent = alpha8 != 255 ? true : false;
+                  }
+
+                  if (transparent) {
+                    pixel8 = COLOUR_FOR_TRANSPARENT;
+                  } else {
+                    pixel8 >>= 4;
+                    if (blackWhite) {
+                      if (pixel8 > 7)
+                        pixel8 = 15;
+                      else
+                        pixel8 = 0;
+                    }
+                  }
+                  buffer[offset] = pixel8;
 			++offset;
 			pixOffset+=pixPixelSize;
 		}
