@@ -16,10 +16,9 @@
 
 #include "MainWindow.h"
 
-
 int main(int argc, char* argv[])
 {
-	uint32_t alphaColor = 15;
+	uint32_t alphaColor = MainWindow::COLOUR_FOR_TRANSPARENT;
 	std::string filename;
 	bool blackWhite = false;
 	if( argc == 2 ) {

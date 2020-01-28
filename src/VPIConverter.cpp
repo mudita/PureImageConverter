@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <fstream>
 #include "VPIConverter.h"
+#include "MainWindow.h"
 
 static std::vector<std::string> splitpath(
   const std::string& str
@@ -119,7 +120,10 @@ void VPIConverter::exportVPI( std::string filename, uint8_t* buffer, uint32_t w,
 		std::vector<vec>* row = *it;
 		std::cout << std::setfill (' ') << std::setw (10) << row->size() <<" ";
 		for( vec v : *row ) {
-			std::cout<<"["<<v.offset<<","<<v.length<<","<<v.color<<"]";
+		        if (v.color == MainWindow::COLOUR_FOR_TRANSPARENT)
+                          std::cout<<"["<<v.offset<<","<<v.length<<","<<"–"<<"]";
+                        else
+			  std::cout<<"["<<v.offset<<","<<v.length<<","<<v.color<<"]";
 			totalBytes+=(sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t))*(v.length/255+1);
 		}
 		std::cout<<std::endl;
