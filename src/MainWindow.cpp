@@ -33,8 +33,8 @@ MainWindow::MainWindow( std::string filename, uint32_t alphaColor, bool blackWhi
 	uint32_t pixRowstride = piximage.get()->get_rowstride();
 	uint32_t pixWidth = piximage.get()->get_width();
 	uint32_t pixHeight = piximage.get()->get_height();
-	uint32_t pixPixelSize = pixRowstride/pixWidth; // == get_n_channels()
-        bool pixHasAlpha = piximage->get_has_alpha();
+	uint32_t pixPixelSize = piximage.get()->get_n_channels();
+        bool pixHasAlpha = piximage.get()->get_has_alpha();
 
 	std::cout<<"rowstride: "<<pixRowstride<<std::endl;
 	std::cout<<"width: "<<pixWidth<<std::endl;
