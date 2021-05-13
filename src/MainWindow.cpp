@@ -51,6 +51,7 @@ MainWindow::MainWindow( std::string filename, uint32_t alphaColor, bool blackWhi
 
 	uint8_t pixel8;
 	for( uint32_t y=0; y<pixHeight; ++y ) {
+        pixOffset = y * pixRowstride; // in case of `pixPixelSize` and `pixWidth` being both odd, there is at least one additional byte at the end of each row that should be discarded. Probable cause: uintX_t (uint16_t?) -> uint8_t array conversion in gdkmm-3.0 lib
 		for( uint32_t x=0; x<pixWidth; ++x ) {
 			pixel8 = static_cast<uint8_t>((*(pixBuffer + pixOffset)) & 0x000000FF); // luminosity as a single byte. this whole cast is actually not needed, as pixBuffer is uint8_t. Here reading actually red channel
                   bool transparent = false;
